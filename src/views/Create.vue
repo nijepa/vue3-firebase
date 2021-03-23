@@ -1,6 +1,7 @@
 <template>
   <div class="create">
     <form @submit.prevent="handleSubmit">
+      <h4>Create New Post</h4>
       <label>Title:</label>
       <input v-model="title" type="text" required>
       <label>Content:</label>
@@ -14,6 +15,8 @@
       <div v-for="tag in tags" :key="tag" class="pill">
         #{{ tag }}
       </div>
+      <label for="">Upload playlist cover image</label>
+      <input type="file" @change="handleChange">
       <button>Add Post</button>
     </form>
   </div>
@@ -23,6 +26,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { projectFirestore, timestamp } from '../firebase/config'
+import useStorage from '@/composables/useStorage'
 
 export default {
   setup() {
@@ -30,7 +34,11 @@ export default {
     const body = ref('')
     const tags = ref([])
     const tag = ref('')
+    const file = ref(null)
+    const fileError = ref(null)
+    const isPending = ref(false)
 
+    const { filePath, url, uploadImage } = useStorage('images')
     const router = useRouter()
 
     const handleKeydown = () => {
@@ -42,17 +50,40 @@ export default {
     }
 
     const handleSubmit = async () => {
+      if (file.value) {
+        isPending.value = true
+        await uploadImage(file.value)
       const post = {
         title: title.value,
         body: body.value,
         tags: tags.value,
+        coverUrl: url.value,
+        filePath: filePath.value,
         createdAt: timestamp()
       }
       await projectFirestore.collection('posts').add(post)
+      isPending.value = false
 
       router.push({ name: 'Home' })
+      }
     }
-    return { body, title, tags, tag, handleKeydown, handleSubmit }
+
+    // allowed file types
+    const types = ['image/png', 'image/jpeg']
+
+    const handleChange = (e) => {
+      const selected = e.target.files[0]
+
+      if (selected && types.includes(selected.type)) {
+        file.value = selected
+        fileError.value = null
+      } else {
+        file.value = null
+        fileError.value = 'Please select image file (png or jpg)'
+      }
+    }
+
+    return { body, title, tags, tag, handleKeydown, handleSubmit, handleChange }
   },
 }
 </script>
@@ -88,7 +119,7 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
-    background: #ff8800;
+    background: var(--purple);
     position: absolute;
     z-index: -1;
     padding-right: 40px;
@@ -98,7 +129,7 @@ export default {
   button {
     display: block;
     margin-top: 30px;
-    background: #ff8800;
+    background: var(--purple);
     color: white;
     border: none;
     padding: 8px 16px;

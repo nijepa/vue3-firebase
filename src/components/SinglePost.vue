@@ -1,5 +1,8 @@
 <template>
   <div class="post">
+    <div class="cover">
+      <img :src="post.coverUrl" alt="">
+    </div>
     <router-link :to="{ name: 'Details', params: { id: post.id }}">
       <h3>{{ post.title }}</h3>
     </router-link>
@@ -42,7 +45,7 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
-    background: #ff8800;
+    background: var(--purple);
     position: absolute;
     z-index: -1;
     padding-right: 40px;

@@ -27,7 +27,7 @@ export default {
     const router = useRouter()
 
     const enterChat = () => {
-      router.push({ name: 'Chatroom' })
+      router.push({ name: 'Home' })
     }
 
     return { showLogin, enterChat }
@@ -39,6 +39,9 @@ export default {
   .welcome {
     text-align: center;
     padding: 20px 0;
+  }
+  .welcome h2 {
+    font-family: var(--font-logo);
   }
   /* form styles */
   .welcome form {

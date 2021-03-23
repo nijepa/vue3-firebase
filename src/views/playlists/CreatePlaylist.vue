@@ -22,7 +22,7 @@ import { useRouter } from 'vue-router'
 
 export default {
   setup() {
-    const { filePath, url, uploadImage } = useStorage()
+    const { filePath, url, uploadImage } = useStorage('covers')
     const { error, addDoc } = useCollection('playlists')
     const { user } = getUser()
     const router = useRouter()

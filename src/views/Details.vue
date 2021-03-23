@@ -1,6 +1,9 @@
 <template>
   <div v-if="error">{{ error }}</div>
   <div v-if="post" class="post">
+    <div class="cover">
+      <img :src="post.coverUrl" alt="">
+    </div>
     <h3>{{ post.title }}</h3>
     <p class="pre">{{ post.body }}</p>
     <button @click="handleClick">delete post</button>

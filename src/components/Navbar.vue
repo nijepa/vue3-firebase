@@ -2,24 +2,24 @@
   <header>
     <div class="logo">
       <img src="@/assets/n.png" alt="">
-      <h1>ijepa</h1>
+      <h1>P</h1>
     </div>
     
     <nav>
       <router-link :to="{ name: 'Home' }">Home</router-link>
-      <router-link :to="{ name: 'Create' }">Create Post</router-link>
-      <router-link :to="{ name: 'Chatroom' }">Chatroom</router-link>
       <router-link :to="{ name: 'Playlists' }">Playlists</router-link>
+      <router-link :to="{ name: 'Chatroom' }">Chatroom</router-link>
       <div class="nav-user" v-if="user">
+        <router-link :to="{ name: 'Create' }">Create Post</router-link>
         <router-link :to="{ name: 'CreatePlaylist' }">Create Playlist</router-link>
         <router-link :to="{ name: 'UserPlaylists' }">My Playlists</router-link>
         <p>{{ user.displayName }}</p>
-        <p class="email">{{ user.email }}</p>
+        <!-- <p class="email">{{ user.email }}</p> -->
         <a @click="handleClick">Log out</a>
       </div>
-      <div v-else>
-        <router-link :to="{ name: 'Auth' }">Login/Signup</router-link>
-      </div>
+      <!-- <div v-else> -->
+        <router-link v-else :to="{ name: 'Auth' }">Login/Signup</router-link>
+      <!-- </div> -->
     </nav>
   </header>
 </template>
@@ -52,6 +52,7 @@ export default {
     align-items: center;
     /* max-width: 1200px; */
     margin: 0 auto;
+    margin-bottom: 20px;
     padding: 10px;
     position: relative;
     /* background: var(--primary); */
@@ -61,7 +62,7 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
-    background: #6d4cbb;
+    background: var(--purple);
     position: absolute;
     z-index: -1;
     padding-right: 40px;
@@ -73,7 +74,7 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
-    background: #6d4cbb;
+    background: var(--purple);
     position: absolute;
     z-index: -1;
     padding-right: 40px;
@@ -85,20 +86,45 @@ export default {
     font-size: 48px;
   }
   header a {
-    color: #bbb;
+    color: var(--purple);
     text-decoration: none;
     margin-left: 20px;
+    position: relative;
+    z-index: 2;
+  }
+  header a::before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #4a3b6e;
+    position: absolute;
+    z-index: -1;
+    border-radius: 2px;
+    padding-right: 17px;
+    left: -10px;
+    transform: rotateZ(-3deg);
+    transition: all .4s ease;
   }
   header a:hover {
-    color: var(--purple-light);
+    color: var(--purple-lighter);
+  }
+  header a:hover::before {
+    transform: rotateZ(0deg);
+    -webkit-box-shadow: 0px 0px 1px 1px var(--purple-light);
+    -moz-box-shadow: 0px 0px 1px 1px var(--purple-light);
+    box-shadow: 0px 0px 1px 1px var(--purple-light);
   }
   header a.router-link-active {
-    color: var(--purple-dark);
+    color: var(--purple-light);
     font-weight: bold;
   }
+  header a.router-link-active::before {
+    transform: rotateZ(0deg);
+  }
   nav {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
+    padding: 0 20px;
+    /* border-bottom: 1px solid #eee; */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -106,7 +132,7 @@ export default {
   nav p {
     margin: 2px auto;
     font-size: 16px;
-    color: #444;
+    color: var(--purple-light);
   }
   nav p.email {
     font-size: 14px;
@@ -117,7 +143,7 @@ export default {
     align-items: center;
   }
   .nav-user p {
-    margin-left: 10px;
+    margin-left: 20px;
   }
   header img {
     max-height: 60px;
