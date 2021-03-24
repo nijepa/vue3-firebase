@@ -19,6 +19,7 @@ import getPost from '@/composables/getPost'
 import Spinner from '../components/Spinner.vue'
 import { projectFirestore } from '../firebase/config'
 import { useRouter } from 'vue-router'
+import useStorage from '@/composables/useStorage'
 //import { useRoute } from 'vue-router'
 
 export default {
@@ -26,12 +27,14 @@ export default {
   components: { Spinner },
   setup(props) {
     const router = useRouter()
+    const { deleteImage } = useStorage('images')
 
     const { error, post, load } = getPost(props.id)
     
     load()
 
     const handleClick = async () => {
+      await deleteImage(post.value.filePath)
       await projectFirestore.collection('posts')
         .doc(props.id)
         .delete()

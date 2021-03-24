@@ -1,6 +1,6 @@
 <template>
   <div v-if="error" class="error">{{ error }}</div>
-  <div v-if="playlist" class="playlist-details">
+  <div v-else-if="playlist" class="playlist-details">
     <div class="playlist-info">
       <div class="cover">
         <img :src="playlist.coverUrl" alt="">
@@ -12,13 +12,15 @@
     </div>
     <div class="song-list">
       <div v-if="!playlist.songs.length">No songs have been added to this playlist yet.</div>
-      <div v-for="song in playlist.songs" :key="song.id" class="single-song">
-        <div class="details">
-          <h3>{{ song.title }}</h3>
-          <p>{{ song.artist }}</p>
+      <transition-group tag="ul" name="list" appear>
+        <div v-for="song in playlist.songs" :key="song.id" class="single-song">
+          <div class="details">
+            <h3>{{ song.title }}</h3>
+            <p>{{ song.artist }}</p>
+          </div>
+          <button v-if="ownership" @click="(handleClick(song.id))">Delete</button>
         </div>
-        <button v-if="ownership" @click="(handleClick(song.id))">Delete</button>
-      </div>
+      </transition-group>
       <AddSong v-if="ownership" :playlist="playlist" />
     </div>
   </div>
@@ -40,7 +42,7 @@ export default {
     const { error, document: playlist } = getDocument('playlists', props.id)
     const { user } = getUser()
     const { deleteDoc, updateDoc } = useDocument('playlists', props.id)
-    const { deleteImage } = useStorage()
+    const { deleteImage } = useStorage('covers')
     const router = useRouter()
 
     const ownership = computed(() => {
@@ -54,7 +56,7 @@ export default {
     }
 
     const handleClick = async (id) => {
-      const songs = playlist.value.filter(song => song.id !== id)
+      const songs = playlist.value.songs.filter(song => song.id !== id)
       await updateDoc({ songs })
     }
 
@@ -64,6 +66,32 @@ export default {
 </script>
 
 <style>
+  .list-enter-from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .list-enter-to {
+    opacity: 1;
+    transform: scale(1);
+  } 
+  .list-enter-active {
+    transition: all .5s ease; 
+  }
+  .list-leave-from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .list-leave-to {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  .list-leave-active {
+    transition: all .5s ease;
+    position: absolute;
+  }
+  .list-move {
+    transition: all .5s ease;
+  }
   .playlist-details {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -101,6 +129,9 @@ export default {
   }
   .description {
     text-align: left;
+  }
+  .song-list {
+    position: relative;
   }
   .single-song {
     padding: 10px 0;

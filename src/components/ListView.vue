@@ -1,25 +1,53 @@
 <template>
-  <div v-for="playlist in playlists" :key="playlist.id">
-    <router-link :to="{ name: 'PlaylistDetails', params: { id: playlist.id}}">
-      <div class="single">
-        <div class="thumbnail">
-          <img :src="playlist.coverUrl" alt="">
+  <transition-group
+    tag="ul"
+    appear
+    @beforeEnter="beforeEnter"
+    @enter="enter"
+  >
+    <div v-for="(playlist, index) in playlists" 
+      :key="playlist.id" 
+      :data-index="index"
+    >
+      <router-link :to="{ name: 'PlaylistDetails', params: { id: playlist.id}}">
+        <div class="single">
+          <div class="thumbnail">
+            <img :src="playlist.coverUrl" alt="">
+          </div>
+          <div class="info">
+            <h3>{{ playlist.title }}</h3>
+            <p>Created by: {{ playlist.userName }}</p>
+          </div>
+          <div class="song-number">
+            <p>{{ playlist.songs.length }}</p>
+          </div>
         </div>
-        <div class="info">
-          <h3>{{ playlist.title }}</h3>
-          <p>Created by: {{ playlist.userName }}</p>
-        </div>
-        <div class="song-number">
-          <p>{{ playlist.songs.length }}</p>
-        </div>
-      </div>
-    </router-link>
-  </div>
+      </router-link>
+    </div>
+  </transition-group>
 </template>
 
 <script>
+import gsap from 'gsap'
+
 export default {
-  props: ['playlists']
+  props: ['playlists'],
+  setup() {
+    const beforeEnter = (el) => {
+      el.style.opacity = 0;
+      el.style.transform = 'translateY(100px)'
+    }
+    const enter = (el) => {
+      gsap.to(el, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: el.dataset.index * 0.5
+      })
+    }
+
+    return { beforeEnter, enter }
+  }
 }
 </script>
 
