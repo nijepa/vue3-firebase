@@ -46,7 +46,7 @@ export default {
   .chat-window {
     background: #fafafa;
     padding: 30px 20px;
-    margin: 10px 30px;
+    margin: 10px;
     border-radius: 5px;
   }
   .single {

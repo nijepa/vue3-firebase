@@ -12,10 +12,12 @@
 
 <script>
 import Navbar from './components/Navbar'
+
 export default {
   components: { Navbar }
 }
 </script>
+
 <style>
 .route-enter-from {
   opacity: 0;
@@ -37,6 +39,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
   color: #2c3e50;
+  overflow: hidden;
 }
 .content {
   margin: 0 auto;

@@ -99,9 +99,11 @@ export default {
   }
   .cover {
     overflow: hidden;
+    border: none;
     border-radius: 20px;
     position: relative;
     padding: 160px;
+    max-width: 550px;
   }
   .cover img {
     display: block;
@@ -110,11 +112,19 @@ export default {
     left: 0;
     min-width: 100%;
     min-height: 100%;
-    max-width: 120%;
-    max-height: 120%;
+    max-width: 110%;
+    max-height: 110%;
+    transition: all .7s ease;
+    cursor: pointer;
+  }
+  .cover img:hover {
+    max-width: 100%;
+    max-height: 100%
+    
   }
   .playlist-info {
     text-align: center;
+    padding: 10px;
   }
   .playlist-info h2 {
     text-transform: capitalize;

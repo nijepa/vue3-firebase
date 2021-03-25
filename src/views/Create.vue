@@ -3,9 +3,15 @@
     <form @submit.prevent="handleSubmit">
       <h4>Create New Post</h4>
       <label>Title:</label>
-      <input v-model="title" type="text" required>
+      <input 
+        v-model="title" 
+        type="text" 
+        @keypress="handleKey">
       <label>Content:</label>
-      <textarea v-model="body" required></textarea>
+      <textarea 
+        v-model="body" 
+        @keypress="handleKey">
+      </textarea>
       <label>Tags (hit enter to add a tag):</label>
       <input 
         @keydown.enter.prevent="handleKeydown" 
@@ -15,8 +21,18 @@
       <div v-for="tag in tags" :key="tag" class="pill">
         #{{ tag }}
       </div>
-      <label for="">Upload playlist cover image</label>
-      <input type="file" @change="handleChange">
+      <div class="image-pload">
+        <label for="">Upload playlist cover image</label>
+        <input type="file" @change="handleChange">
+      </div>
+      <Error :err="error" />
+<!--       <transition appear 
+        @before-enter="beforeEnter"
+        @enter="enter">
+        <div v-if="error">
+          <div class="error">{{ error }}</div>
+        </div>
+      </transition> -->
       <button>Add Post</button>
     </form>
   </div>
@@ -27,8 +43,11 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { projectFirestore, timestamp } from '../firebase/config'
 import useStorage from '@/composables/useStorage'
+import isEmpty from '@/composables/isEmpty'
+import Error from '../components/Error'
 
 export default {
+  components: { Error },
   setup() {
     const title = ref('')
     const body = ref('')
@@ -37,9 +56,14 @@ export default {
     const file = ref(null)
     const fileError = ref(null)
     const isPending = ref(false)
+    let error = ref(null)
 
     const { filePath, url, uploadImage } = useStorage('images')
     const router = useRouter()
+
+    const handleKey = () => {
+      error.value = null
+    }
 
     const handleKeydown = () => {
       if (!tags.value.includes(tag.value)) {
@@ -53,18 +77,22 @@ export default {
       if (file.value) {
         isPending.value = true
         await uploadImage(file.value)
-      const post = {
-        title: title.value,
-        body: body.value,
-        tags: tags.value,
-        coverUrl: url.value,
-        filePath: filePath.value,
-        createdAt: timestamp()
       }
-      await projectFirestore.collection('posts').add(post)
-      isPending.value = false
-
-      router.push({ name: 'Home' })
+      try {
+        const post = {
+          title: isEmpty(title.value, 'title'),
+          body: isEmpty(body.value, 'body'),
+          tags: tags.value,
+          coverUrl: url.value,
+          filePath: filePath.value,
+          createdAt: timestamp()
+        }
+        await projectFirestore.collection('posts').add(post)
+        isPending.value = false
+        
+        router.push({ name: 'Home' })
+      } catch (err) {
+        error.value = err.message
       }
     }
 
@@ -83,12 +111,28 @@ export default {
       }
     }
 
-    return { body, title, tags, tag, handleKeydown, handleSubmit, handleChange }
+    return { body, title, tags, tag, handleKeydown, handleSubmit, handleChange, error, handleKey }
   },
 }
 </script>
 
 <style>
+.error-enter-active {
+    /* transition: all 2s ease; */
+    animation: wobbles 2s ease;
+  }
+  /* .toast-leave-active {
+    animation: wobble 2s ease;
+  } */
+  @keyframes wobbles {
+    0% { transform: translateY(-60px) scale(5); opacity: 0; }
+    50% { transform: translateY(0) scale(1); opacity: 1; }
+    60% { transform: translateX(10px); }
+    70% { transform: translateX(-10px); }
+    80% { transform: translateX(5px); }
+    90% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+  }
   form {
     max-width: 480px;
     margin: 0 auto;
@@ -139,7 +183,7 @@ export default {
     display: inline-block;
     margin: 10px 10px 0 0;
     color: #444;
-    background: #ddd;
+    background: var(--secondary);
     padding: 8px;
     border-radius: 20px;
     font-size: 14px;

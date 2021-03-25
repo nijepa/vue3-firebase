@@ -1,12 +1,13 @@
 <template>
   <form @submit.prevent="handleSubmit">
     <h4>Create New Playlist</h4>
-    <input type="text" required placeholder="Playlist title" v-model="title">
-    <textarea required placeholder="Playlist description..." v-model="description"></textarea>
+    <input type="text" placeholder="Playlist title" v-model="title">
+    <textarea placeholder="Playlist description..." v-model="description"></textarea>
     <label for="">Upload playlist cover image</label>
     <input type="file" @change="handleChange">
-    <div class="error">{{ fileError }}</div>
-    <div class="error">{{ error }}</div>
+    <div v-if="fileError" class="error">{{ fileError }}</div>
+    <!-- <div class="error">{{ error }}</div> -->
+    <Error :err="error" />
     <button v-if="!isPending">Create</button>
     <button v-else disabled>Saving...</button>
   </form>
@@ -16,11 +17,14 @@
 import { ref } from 'vue'
 import useStorage from '@/composables/useStorage'
 import useCollection from '@/composables/useCollection'
+import isEmpty from '@/composables/isEmpty'
 import getUser from '@/composables/getUser'
 import { timestamp } from '@/firebase/config'
 import { useRouter } from 'vue-router'
+import Error from '../../components/Error'
 
 export default {
+  components: { Error },
   setup() {
     const { filePath, url, uploadImage } = useStorage('covers')
     const { error, addDoc } = useCollection('playlists')
@@ -37,8 +41,10 @@ export default {
       if (file.value) {
         isPending.value = true
         await uploadImage(file.value)
+      }
+      try {
         const res = await addDoc({
-          title: title.value,
+          title: isEmpty(title.value, 'title'),
           description: description.value,
           userId: user.value.uid,
           userName: user.value.displayName,
@@ -51,6 +57,8 @@ export default {
         if (!error.value) {
           router.push({ name: 'PlaylistDetails', params: { id: res.id }})
         }
+      } catch(err) {
+        error.value = err.message
       }
     }
 

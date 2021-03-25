@@ -14,92 +14,92 @@ import { projectAuth } from '../firebase/config'
 
 // auth guard
 const requireAuth = (to, from, next) => {
-  let user = projectAuth.currentUser
-  if (!user) {
-    next({ name: 'Auth' })
-  } else {
-    next()
-  }
+    let user = projectAuth.currentUser
+    if (!user) {
+        next({ name: 'Auth' })
+    } else {
+        next()
+    }
 }
 
 const requireNoAuth = (to, from, next) => {
-  let user = projectAuth.currentUser
-  if (user) {
-    next({ name: 'Chatroom' })
-  } else {
-    next()
-  }
+    let user = projectAuth.currentUser
+    if (user) {
+        next({ name: 'Chatroom' })
+    } else {
+        next()
+    }
 }
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/posts/:id',
-    name: 'Details',
-    component: Details,
-    props: true
-  },
-  {
-    path: '/create',
-    name: 'Create',
-    component: Create,
-    beforeEnter: requireAuth
-  },
-  {
-    path: '/tags/:tag',
-    name: 'Tag',
-    component: Tag
-  },
-  {
-    path: '/realtime',
-    name: 'RealTime',
-    component: RealTime
-  },
-  {
-    path: '/auth',
-    name: 'Auth',
-    component: Auth,
-    beforeEnter: requireNoAuth
-  },
-  {
-    path: '/chatroom',
-    name: 'Chatroom',
-    component: Chatroom,
-    beforeEnter: requireAuth
-  },
-  {
-    path: '/playlists',
-    name: 'Playlists',
-    component: Playlists
-  },
-  {
-    path: '/playlists/user',
-    name: 'UserPlaylists',
-    component: UserPlaylists,
-    beforeEnter: requireAuth
-  },
-  {
-    path: '/playlists/create',
-    name: 'CreatePlaylist',
-    component: CreatePlaylist,
-    beforeEnter: requireAuth
-  },
-  {
-    path: '/playlists/:id',
-    name: 'PlaylistDetails',
-    component: PlaylistDetails,
-    beforeEnter: requireAuth,
-    props: true
-  }
+const routes = [{
+        path: '/',
+        name: 'Home',
+        component: Home
+    },
+    {
+        path: '/posts/:id',
+        name: 'Details',
+        component: Details,
+        props: true
+    },
+    {
+        path: '/create',
+        name: 'Create',
+        component: Create,
+        props: true,
+        beforeEnter: requireAuth
+    },
+    {
+        path: '/tags/:tag',
+        name: 'Tag',
+        component: Tag
+    },
+    {
+        path: '/realtime',
+        name: 'RealTime',
+        component: RealTime
+    },
+    {
+        path: '/auth',
+        name: 'Auth',
+        component: Auth,
+        beforeEnter: requireNoAuth
+    },
+    {
+        path: '/chatroom',
+        name: 'Chatroom',
+        component: Chatroom,
+        beforeEnter: requireAuth
+    },
+    {
+        path: '/playlists',
+        name: 'Playlists',
+        component: Playlists
+    },
+    {
+        path: '/playlists/user',
+        name: 'UserPlaylists',
+        component: UserPlaylists,
+        beforeEnter: requireAuth
+    },
+    {
+        path: '/playlists/create',
+        name: 'CreatePlaylist',
+        component: CreatePlaylist,
+        beforeEnter: requireAuth
+    },
+    {
+        path: '/playlists/:id',
+        name: 'PlaylistDetails',
+        component: PlaylistDetails,
+        beforeEnter: requireAuth,
+        props: true
+    }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(process.env.BASE_URL),
+    routes
 })
 
 export default router

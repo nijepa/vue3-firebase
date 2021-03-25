@@ -6,13 +6,16 @@
     </div>
     
     <nav>
-      <router-link :to="{ name: 'Home' }">Home</router-link>
-      <router-link :to="{ name: 'Playlists' }">Playlists</router-link>
-      <router-link :to="{ name: 'Chatroom' }">Chatroom</router-link>
+      <div class="nav-links">
+        <router-link :to="{ name: 'Home' }">Home</router-link>
+        <router-link :to="{ name: 'Playlists' }">Playlists</router-link>
+        <router-link :to="{ name: 'Chatroom' }">Chatroom</router-link>
+      </div>
+      
       <div class="nav-user" v-if="user">
         <router-link :to="{ name: 'Create' }">Create Post</router-link>
         <router-link :to="{ name: 'CreatePlaylist' }">Create Playlist</router-link>
-        <router-link :to="{ name: 'UserPlaylists' }">My Playlists</router-link>
+        <!-- <router-link :to="{ name: 'UserPlaylists' }">My Playlists</router-link> -->
         <p>{{ user.displayName }}</p>
         <!-- <p class="email">{{ user.email }}</p> -->
         <a @click="handleClick">Log out</a>
@@ -125,8 +128,11 @@ export default {
   nav {
     padding: 0 20px;
     /* border-bottom: 1px solid #eee; */
-    display: flex;
+    display: grid;
+    grid-row-gap: 12px;
+    /* grid-template-columns: 1fr auto; */
     justify-content: space-between;
+    justify-items: end;
     align-items: center;
   }
   nav p {
@@ -141,6 +147,12 @@ export default {
   .nav-user {
     display: flex;
     align-items: center;
+    font-size: 18px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
   }
   .nav-user p {
     margin-left: 20px;
@@ -155,5 +167,13 @@ export default {
     margin-left: .1em;
     color: var(--purple-dark);
     letter-spacing: .1em;
+  }
+  @media screen and (max-width: 500px) {
+    .nav-links {
+      font-size: 14px;
+    }
+    .nav-user {
+      font-size: 12px;
+    }
   }
 </style>

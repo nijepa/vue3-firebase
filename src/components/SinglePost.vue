@@ -1,9 +1,10 @@
 <template>
   <div class="post">
-    <div class="cover">
-      <img :src="post.coverUrl" alt="">
-    </div>
     <router-link :to="{ name: 'Details', params: { id: post.id }}">
+      <div class="cover">
+        <img :src="post.coverUrl" alt="">
+      </div>
+    
       <h3>{{ post.title }}</h3>
     </router-link>
     <p>{{ snippet }}</p>
@@ -39,6 +40,11 @@ export default {
     color: white;
     margin-bottom: 10px;
     max-width: 400px;
+    transition: all .5s ease;
+    cursor: pointer;
+  }
+  .post h3:hover {
+    color: var(--purple-dark);
   }
   .post h3::before {
     content: "";
@@ -50,6 +56,10 @@ export default {
     z-index: -1;
     padding-right: 40px;
     left: -30px;
-    transform: rotateZ(-1deg);
+    transform: rotateZ(-2deg);
+    transition: all .5s ease;
+  }
+  .post h3:hover::before {
+    transform: rotateZ(0);
   }
 </style>

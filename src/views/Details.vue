@@ -1,12 +1,13 @@
 <template>
   <div v-if="error">{{ error }}</div>
-  <div v-if="post" class="post">
+  <div v-else-if="post" class="post">
     <div class="cover">
       <img :src="post.coverUrl" alt="">
     </div>
     <h3>{{ post.title }}</h3>
     <p class="pre">{{ post.body }}</p>
-    <button @click="handleClick">delete post</button>
+    <button @click="handleUpdate">update post</button>
+    <button @click="handleDelete">delete post</button>
   </div>
   <div v-else>
     <Spinner />
@@ -33,16 +34,20 @@ export default {
     
     load()
 
-    const handleClick = async () => {
+    const handleDelete = async () => {
       await deleteImage(post.value.filePath)
       await projectFirestore.collection('posts')
         .doc(props.id)
         .delete()
 
-      router.push('/')
+      router.push({ name: 'Home'})
     }
 
-    return { error, post, handleClick }
+    const handleUpdate = () => {
+      router.push( { name: 'Create', params: { id: props.id }})
+    }
+
+    return { error, post, handleDelete, handleUpdate }
   },
 }
 </script>
