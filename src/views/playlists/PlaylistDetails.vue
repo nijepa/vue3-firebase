@@ -6,63 +6,103 @@
         <img :src="playlist.coverUrl" alt="">
       </div>
       <h2>{{ playlist.title }}</h2>
-      <p class="username">Created by {{ playlist.userName }}</p>
-      <p class="description">{{ playlist.description }}</p>
-      <button v-if="ownership" @click="handleDelete">Delete playlist</button>
+      <p class="username">
+        Created by {{ playlist.userName }}
+      </p>
+      <p class="description">
+        {{ playlist.description }}
+      </p>
+      <div class="btn-actions">
+        <button v-if="ownership" @click="handleUpd(playlist.id)">
+          Update playlist
+        </button>
+        <button v-if="ownership" @click="handleDelete">
+          Delete playlist
+        </button>
+      </div>
     </div>
     <div class="song-list">
-      <div v-if="!playlist.songs.length">No songs have been added to this playlist yet.</div>
+      <div v-if="!playlist.songs.length">
+        No songs have been added to this playlist yet.
+      </div>
       <transition-group tag="ul" name="list" appear>
-        <div v-for="song in playlist.songs" :key="song.id" class="single-song">
+        <div 
+          v-for="song in playlist.songs" 
+          :key="song.id" 
+          class="single-song"
+        >
           <div class="details">
             <h3>{{ song.title }}</h3>
             <p>{{ song.artist }}</p>
           </div>
-          <button v-if="ownership" @click="(handleClick(song.id))">Delete</button>
+          <div v-if="ownership" class="btn-actions">
+            <button @click.prevent="(handleUpdate(song))">
+              Update
+            </button>
+            <button @click.prevent="(handleClick(song.id))">
+              Delete
+            </button>
+          </div>
         </div>
       </transition-group>
-      <AddSong v-if="ownership" :playlist="playlist" />
+      <AddSong 
+        v-if="ownership" 
+        :playlist="playlist" 
+        :song="song"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import AddSong from '../../components/AddSong'
-import getDocument from '@/composables/getDocument'
-import getUser from '@/composables/getUser'
-import useDocument from '@/composables/useDocument'
-import useStorage from '@/composables/useStorage'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+  import AddSong from '../../components/AddSong'
+  import getDocument from '@/composables/getDocument'
+  import getUser from '@/composables/getUser'
+  import useDocument from '@/composables/useDocument'
+  import useStorage from '@/composables/useStorage'
+  import { computed, ref } from 'vue'
+  import { useRouter } from 'vue-router'
 
-export default {
-  props: ['id'],
-  components: { AddSong },
-  setup(props) {
-    const { error, document: playlist } = getDocument('playlists', props.id)
-    const { user } = getUser()
-    const { deleteDoc, updateDoc } = useDocument('playlists', props.id)
-    const { deleteImage } = useStorage('covers')
-    const router = useRouter()
+  export default {
+    props: ['id'],
+    components: { AddSong },
+    setup(props) {
+      const { error, document: playlist } = getDocument('playlists', props.id)
+      const { user } = getUser()
+      const { deleteDoc, updateDoc } = useDocument('playlists', props.id)
+      const { deleteImage } = useStorage('covers')
+      const router = useRouter()
+      const song = ref(null)
 
-    const ownership = computed(() => {
-      return playlist.value && user.value && user.value.uid === playlist.value.userId
-    })
+      const ownership = computed(() => {
+        return playlist.value && user.value && user.value.uid === playlist.value.userId
+      })
 
-    const handleDelete = async () => {
-      await deleteImage(playlist.value.filePath)
-      await deleteDoc()
-      router.push({ name: 'Playlists' })
+      const handleUpd = (id) => {
+        router.push({ name: 'CreatePlaylist', params: { id: id } })
+      }
+
+      const handleUpdate = (track) => {
+        song.value = track
+      }
+
+      const handleDelete = async () => {
+        await deleteImage(playlist.value.filePath)
+        await deleteDoc()
+        router.push({ name: 'Playlists' })
+      }
+
+      const handleClick = async (id) => {
+        song.value = null
+        const songs = playlist.value.songs.filter(song => song.id !== id)
+        await updateDoc({ songs })
+      }
+
+      return { error, playlist, ownership, 
+              handleDelete, handleClick, 
+              handleUpdate, song, handleUpd }
     }
-
-    const handleClick = async (id) => {
-      const songs = playlist.value.songs.filter(song => song.id !== id)
-      await updateDoc({ songs })
-    }
-
-    return { error, playlist, ownership, handleDelete, handleClick }
   }
-}
 </script>
 
 <style>
@@ -150,5 +190,8 @@ export default {
     align-items: center;
     border-bottom: 1px solid var(--secondary);
     margin-bottom: 20px;
+  }
+  .btn-actions button {
+    margin-left: 10px;
   }
 </style>

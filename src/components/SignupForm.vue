@@ -3,7 +3,7 @@
     <input type="text" required placeholder="display name" v-model="displayName">
     <input type="email" required placeholder="email" v-model="email">
     <input type="password" required placeholder="password" v-model="password">
-    <div class="error">{{ error }}</div>
+    <div v-if="error" class="error">{{ error }}</div>
     <button v-if="!isPending">Sign up</button>
     <button v-else disabled>Loading...</button>
   </form>
