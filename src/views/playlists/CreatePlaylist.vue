@@ -1,7 +1,9 @@
 <template>
   <form @submit.prevent="handleSubmit">
     <h4>Create New Playlist</h4>
+    <label for="">Playlist title</label>
     <input type="text" placeholder="Playlist title" v-model="title">
+    <label for="">Playlist description</label>
     <textarea placeholder="Playlist description..." v-model="description"></textarea>
     <label for="">Upload playlist cover image</label>
     <input type="file" @change="handleChange">

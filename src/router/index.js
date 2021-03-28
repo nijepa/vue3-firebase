@@ -10,6 +10,7 @@ import Playlists from '../views/playlists/Playlists.vue'
 import UserPlaylists from '../views/playlists/UserPlaylists.vue'
 import CreatePlaylist from '../views/playlists/CreatePlaylist.vue'
 import PlaylistDetails from '../views/playlists/PlaylistDetails.vue'
+import NotFound from '../views/NotFound.vue'
 import { projectAuth } from '../firebase/config'
 
 // auth guard
@@ -35,6 +36,11 @@ const routes = [{
         path: '/',
         name: 'Home',
         component: Home
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: NotFound
     },
     {
         path: '/posts/:id',
